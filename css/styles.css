@@ -1,0 +1,188 @@
+
+/*
+This document contains the style preferences
+for all visual components on te HTML pages, such
+as colors, sizes and positions.
+*/
+
+body {
+    background-color: darkkhaki;
+    margin: 40px;
+}
+
+table.table-ranking{
+    width: 70%;
+    border-collapse: collapse;
+}
+
+table{
+    color: darkkhaki;
+}
+
+.img-logo{
+    height: 95px;
+    width: 260px;
+    position: relative;
+    left: 0px;
+    margin-bottom: 25px;
+}
+
+.normal-text{
+    color: darkkhaki;
+}
+
+.pile {
+
+    width: 45px;
+    height: 408px;
+    border-style: outset;
+    border-width: 2px;
+    padding: 10px;
+    background: darkkhaki;
+    float:left
+}
+
+.playable{
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-style: outset;
+    text-align: center;
+    background: darkslategrey;
+    color: darkkhaki;
+}
+
+.board{
+    height: 408px;
+    width: auto;
+    margin-left: 60px;
+    margin-right: 60px;
+    margin-bottom: 30px;
+    float: left;
+}
+
+.normal-button{
+    width: 100px;
+    height: 45px;
+    float: left;
+    background-color: darkslategrey;
+    color: darkkhaki;
+    cursor: pointer;
+    margin: 6px;
+}
+
+.start-button{
+    width: 100px;
+    height: 45px;
+    float: left;
+    background-color: darkslategrey;
+    color: darkkhaki;
+    cursor: pointer;
+    margin: 6px;
+}
+
+.normal-button:disabled,
+.normal-button[disabled] {
+    background-color: darkgrey;
+}
+
+.start-button:disabled,
+.start-button[disabled] {
+    background-color: darkgrey;
+}
+
+.alternative-button-small{
+    width: auto;
+    height: 25px;
+    float: left;
+    background-color: darkkhaki;
+    color: darkslategrey;
+    cursor: pointer;
+    margin-bottom: 8px;
+}
+
+.menu-default{
+    width: 112px;
+    height: auto;
+    border-style: outset;
+    border-width: 2px;
+    padding: 10px;
+    background: darkkhaki;
+    float: left;
+}
+
+.menu-play{
+    width: auto;
+    height: auto;
+    border-style: outset;
+    border-width: 2px;
+    background: darkkhaki;
+    float: left;
+    padding-left: auto;
+    padding-right: auto;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.close{
+    float: right;
+    color: darkkhaki;
+    cursor: pointer;
+}
+
+.bottom-right{
+    position: absolute;
+    right:    8px;
+    bottom:   2px;
+}
+
+.default-radiobutton{
+    margin-left: 15px;
+}
+
+button.loginButton{
+    float: right;
+}
+
+button.cancelButton{
+    float: left;
+}
+
+
+/*Windows TODO: Change to a different style*/
+
+.window{
+    margin-bottom: 15px;
+    margin-left: 15px;
+    background-color: darkslategrey;
+    padding: 10px;
+    display: none; /* Hidden by default */
+}
+
+.window-holder{
+    float: right;
+    width: auto;
+    height: auto;
+    position:relative
+}
+
+div.window#dialogConfig{
+    width: 300px;
+    height: 380px;
+    position:relative
+}
+
+div.window#dialogLogin{
+    width: 170px;
+    height: 205px;
+}
+
+div.window#dialogRanking{
+    width: 300px;
+    height: 380px;
+}
+
+div.window#dialogRules{
+    width: 300px;
+    height: 380px;
+}

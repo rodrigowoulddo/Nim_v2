@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <!--Links to CSS files-->
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+
+    <title>Nim</title> <!--tab title-->
+
+</head>
+<body>
+
+<!-- Title -->
+<div id="divTitle">
+    <img src="img/nim_logo.png" class="img-logo" alt="Nim">
+</div>
+
+<!--Lateral menu-->
+<div id="menu" class="menu-default vertical-block">
+
+    <!--Buttons-->
+    <button class="normal-button" id="btnLogin">Login</button>
+    <button class="normal-button" id="btnRules">Rules</button>
+    <button class="normal-button" id="btnRanking">Ranking</button>
+    <button class="normal-button" id="btnConfig">Configuration</button>
+
+    <!--Play and Restart buttons-->
+    <div id="menu-play" class="menu-play">
+        <button class="start-button" id="btnStart">Start</button>
+        <button class="start-button" id="btnReset">Reset</button>
+    </div>
+
+</div>
+
+<!--Game Board-->
+<div class="vertical-block">
+
+    <div>
+        <div id="board" class="board">
+
+            <!--Pile Template-->
+            <!--<div class="pile">-->
+                <!--<div class="playable"></div>-->
+                <!--<div class="playable"></div>-->
+                <!--<div class="playable"></div>-->
+                <!--<div class="playable"></div>-->
+                <!--<div class="playable"></div>-->
+                <!--<div class="playable"></div>-->
+                <!--<div class="playable"></div>-->
+                <!--<div class="playable"></div>-->
+            <!--</div>-->
+
+        </div>
+        <p class="normal-text" id="txtMessage"></p>
+
+    </div>
+
+    <!--Windowns-->
+    <div id="divWindows" class="window-holder">
+
+        <!--Login-->
+        <div id="dialogLogin" class="window">
+            <span id="btnCloseLogin" class="close">&times;</span>
+            <h1 class="normal-text">Login</h1>
+            <p><input type="text" name="login" value="" placeholder="Username" required></p>
+            <p><input type="password" name="password" value="" placeholder="Password" required></p>
+            <button class="cancelButton alternative-button-small">Cancel</button>
+            <button class="loginButton alternative-button-small">Login</button>
+        </div>
+
+        <!--Rules-->
+        <div id="dialogRules" class="window">
+            <span id="btnCloseRules" class="close">&times;</span>
+            <h1 class="normal-text">Rules</h1>
+            <h3 class="normal-text">At each move, the player must remove at least one object from one pile and all removed objects must belong to the same pile. The objective of the game is to remove the last object.</h3>
+        </div>
+
+        <!--Ranking-->
+        <div id="dialogRanking" class="window">
+            <span id="btnCloseRanking" class="close">&times;</span>
+            <h1 class="normal-text">Ranking</h1>
+            <table id="tableRanking" class="table-ranking">
+                <tr>
+                    <td class="normal-text"><h3>Player</h3></td>
+                    <td class="normal-text"><h3>Moves</h3></td>
+                </tr>
+                <!--Content inserted dinamicaly by javascript-->
+            </table>
+        </div>
+
+        <!--Config-->
+        <div id="dialogConfig" class="window">
+            <span id="btnCloseConfig" class="close">&times;</span>
+            <h1 class="normal-text">Configuration</h1>
+
+            <!--Piles-->
+            <p class="normal-text">Number of piles</p>
+
+            <label for="radio3piles" class="normal-text default-radiobutton">3</label>
+            <input id="radio3piles" type="radio" name="piles" value="3" checked>
+
+            <label for="radio4piles" class="normal-text default-radiobutton">4</label>
+            <input id="radio4piles" type="radio" name="piles" value="4" >
+
+            <label for="radio5piles" class="normal-text default-radiobutton">5</label>
+            <input id="radio5piles" type="radio" name="piles" value="5" >
+
+            <!--First Player-->
+            <p class="normal-text">First Player</p>
+
+            <label for="radioYouPlayer" class="normal-text default-radiobutton">You</label>
+            <input id="radioYouPlayer" type="radio" name="player" value="3" checked>
+
+            <label for="radioCpuPlayer" class="normal-text default-radiobutton">CPU</label>
+            <input id="radioCpuPlayer" type="radio" name="player" value="4" >
+
+            <!--Dificulty-->
+            <p class="normal-text">Dificulty</p>
+
+            <label for="radioEasy" class="normal-text default-radiobutton">Easy</label>
+            <input id="radioEasy" type="radio" name="dificulty" value="1" checked>
+
+            <label for="radioMedium" class="normal-text default-radiobutton">Medium</label>
+            <input id="radioMedium" type="radio" name="dificulty" value="2" >
+
+            <label for="radioHard" class="normal-text default-radiobutton">Hard</label>
+            <input id="radioHard" type="radio" name="dificulty" value="3" >
+
+
+        </div>
+
+    </div>
+
+
+</body>
+
+<!--Links to JavaScript files-->
+<script type="text/javascript" src="javascript/actions.js"></script>
+
+
+</html>
