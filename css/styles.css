@@ -4,19 +4,14 @@ This document contains the style preferences
 for all visual components on te HTML pages, such
 as colors, sizes and positions.
 */
+.container {
+    width: 900px;
+    margin: 0 auto;
+}
 
 body {
     background-color: darkkhaki;
     margin: 40px;
-}
-
-table.table-ranking{
-    width: 70%;
-    border-collapse: collapse;
-}
-
-table{
-    color: darkkhaki;
 }
 
 .img-logo{
@@ -29,6 +24,12 @@ table{
 
 .normal-text{
     color: darkkhaki;
+}
+
+.messege{
+    text-align: center;
+    display: block;
+    clear: left;
 }
 
 .pile {
@@ -47,6 +48,7 @@ table{
     width: 40px;
     height: 40px;
     border-style: outset;
+    border-width: 4px;
     text-align: center;
     background: darkslategrey;
     color: darkkhaki;
@@ -59,6 +61,7 @@ table{
     margin-right: 60px;
     margin-bottom: 30px;
     float: left;
+    display: block;
 }
 
 .normal-button{
@@ -163,13 +166,12 @@ button.cancelButton{
     float: right;
     width: auto;
     height: auto;
-    position:relative
+    position:relative;
 }
 
 div.window#dialogConfig{
     width: 300px;
     height: 380px;
-    position:relative
 }
 
 div.window#dialogLogin{

@@ -11,6 +11,7 @@
 </head>
 <body>
 
+<div class="container" id="container">
 <!-- Title -->
 <div id="divTitle">
     <img src="img/nim_logo.png" class="img-logo" alt="Nim">
@@ -35,7 +36,6 @@
 
 <!--Game Board-->
 <div class="vertical-block">
-
     <div>
         <div id="board" class="board">
 
@@ -51,13 +51,16 @@
                 <!--<div class="playable"></div>-->
             <!--</div>-->
 
+            <div class="messege">
+                <p class="normal-text" id="txtMessage"></p>
+            </div>
         </div>
-        <p class="normal-text" id="txtMessage"></p>
 
     </div>
+</div>
 
     <!--Windowns-->
-    <div id="divWindows" class="window-holder">
+<div id="divWindows" class="window-holder">
 
         <!--Login-->
         <div id="dialogLogin" class="window">
@@ -132,11 +135,10 @@
 
     </div>
 
-
+</div>
 </body>
 
 <!--Links to JavaScript files-->
 <script type="text/javascript" src="javascript/actions.js"></script>
-
 
 </html>
