@@ -12,55 +12,57 @@
 <body>
 
 <div class="container" id="container">
-<!-- Title -->
-<div id="divTitle">
-    <img src="img/nim_logo.png" class="img-logo" alt="Nim">
-</div>
-
-<!--Lateral menu-->
-<div id="menu" class="menu-default vertical-block">
-
-    <!--Buttons-->
-    <button class="normal-button" id="btnLogin">Login</button>
-    <button class="normal-button" id="btnRules">Rules</button>
-    <button class="normal-button" id="btnRanking">Ranking</button>
-    <button class="normal-button" id="btnConfig">Configuration</button>
-
-    <!--Play and Restart buttons-->
-    <div id="menu-play" class="menu-play">
-        <button class="start-button" id="btnStart">Start</button>
-        <button class="start-button" id="btnReset">Reset</button>
+    <!-- Title -->
+    <div id="divTitle">
+        <img src="img/nim_logo.png" class="img-logo" alt="Nim">
     </div>
 
-</div>
+    <!--Lateral menu-->
+    <div id="menu" class="menu-default">
 
-<!--Game Board-->
-<div class="vertical-block">
-    <div>
+        <!--Buttons-->
+        <button class="normal-button" id="btnLogin">Login</button>
+        <button class="normal-button" id="btnRules">Rules</button>
+        <button class="normal-button" id="btnRanking">Ranking</button>
+        <button class="normal-button" id="btnConfig">Configuration</button>
+
+        <!--Play and Restart buttons-->
+        <div id="menu-play" class="menu-play">
+            <button class="start-button" id="btnStart">Start</button>
+            <button class="start-button" id="btnReset">Reset</button>
+        </div>
+
+    </div>
+
+    <!--Game Board-->
+    <div id="divBoard">
+
+        <!--Messege field-->
+        <div class="messege">
+            <p class="normal-text" id="txtMessage"></p>
+        </div>
+
         <div id="board" class="board">
 
             <!--Pile Template-->
             <!--<div class="pile">-->
-                <!--<div class="playable"></div>-->
-                <!--<div class="playable"></div>-->
-                <!--<div class="playable"></div>-->
-                <!--<div class="playable"></div>-->
-                <!--<div class="playable"></div>-->
-                <!--<div class="playable"></div>-->
-                <!--<div class="playable"></div>-->
-                <!--<div class="playable"></div>-->
+            <!--<div class="playable"></div>-->
+            <!--<div class="playable"></div>-->
+            <!--<div class="playable"></div>-->
+            <!--<div class="playable"></div>-->
+            <!--<div class="playable"></div>-->
+            <!--<div class="playable"></div>-->
+            <!--<div class="playable"></div>-->
+            <!--<div class="playable"></div>-->
             <!--</div>-->
-
-            <div class="messege">
-                <p class="normal-text" id="txtMessage"></p>
-            </div>
         </div>
 
     </div>
-</div>
+
+
 
     <!--Windowns-->
-<div id="divWindows" class="window-holder">
+    <div id="divWindows" class="window-holder">
 
         <!--Login-->
         <div id="dialogLogin" class="window">

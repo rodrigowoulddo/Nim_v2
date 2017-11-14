@@ -4,6 +4,7 @@ This document contains the style preferences
 for all visual components on te HTML pages, such
 as colors, sizes and positions.
 */
+
 .container {
     width: 900px;
     margin: 0 auto;
@@ -14,22 +15,24 @@ body {
     margin: 40px;
 }
 
+.container{
+    background:darkslategrey ;
+    color: darkslategrey;
+    width: 100%;
+    height: 100%;
+}
+
+#divTitle{
+    background: darkkhaki;
+}
+
 .img-logo{
     height: 95px;
     width: 260px;
-    position: relative;
-    left: 0px;
-    margin-bottom: 25px;
 }
 
 .normal-text{
     color: darkkhaki;
-}
-
-.messege{
-    text-align: center;
-    display: block;
-    clear: left;
 }
 
 .pile {
@@ -54,14 +57,17 @@ body {
     color: darkkhaki;
 }
 
+.messege{
+    width: 200px;
+    height: 50px;
+    margin:  0 auto;
+    text-align: center;
+}
+
 .board{
-    height: 408px;
-    width: auto;
-    margin-left: 60px;
-    margin-right: 60px;
-    margin-bottom: 30px;
-    float: left;
-    display: block;
+    height: 450px;
+    width: max-content;
+    margin:  0 auto;
 }
 
 .normal-button{
@@ -106,12 +112,14 @@ body {
 
 .menu-default{
     width: 112px;
-    height: auto;
+    height: 350px;
     border-style: outset;
     border-width: 2px;
     padding: 10px;
     background: darkkhaki;
-    float: left;
+    position: absolute;
+    left: 55px;
+    top: 180px;
 }
 
 .menu-play{

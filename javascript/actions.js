@@ -108,7 +108,7 @@ class Playable {
         this.element.style.background = "darkkhaki";
         this.element.style.pointerEvents = "none";
         this.element.style.border = "none";
-        this.element.style.margin = "4px";
+        this.element.style.margin = "4px"; /*so the border doesnt make diference*/
     }
 
     romoveAllAbove(){
@@ -133,5 +133,5 @@ class Playable {
 
 /****** TESTS *****************************/
 var game = new Game();
-game.numberOfPiles = 3;
+game.numberOfPiles = 5;
 game.createBoard();
