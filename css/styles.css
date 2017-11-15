@@ -5,17 +5,13 @@ for all visual components on te HTML pages, such
 as colors, sizes and positions.
 */
 
-.container {
-    width: 900px;
-    margin: 0 auto;
-}
-
 body {
     background-color: darkkhaki;
     margin: 40px;
 }
 
 .container{
+    margin: 0 auto;
     background:darkslategrey ;
     color: darkslategrey;
     width: 100%;
@@ -110,7 +106,7 @@ body {
     margin-bottom: 8px;
 }
 
-.menu-default{
+.lateral-menu{
     width: 112px;
     height: 350px;
     border-style: outset;

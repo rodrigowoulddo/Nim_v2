@@ -130,8 +130,46 @@ class Playable {
     }
 }
 
+class Window{
+    constructor(type){
 
+        switch(type){
+            case 'login':
+                this.element = document.getElementById("dialogLogin");
+                break;
+            case 'rules':
+                this.element = document.getElementById("dialogRules");
+                break;
+            case 'ranking':
+                this.element = document.getElementById("dialogRanking");
+                break;
+            case 'config':
+                this.element = document.getElementById("dialogConfig");
+                break;
+        }
+    }
+
+    show(){
+        Window.closeAllWindows();
+        this.apear();
+    }
+
+    static closeAllWindows(){
+        new Window('login').disapear();
+        new Window('rules').disapear();
+        new Window('ranking').disapear();
+        new Window('config').disapear();
+    }
+
+    disapear(){
+        this.element.style.display = 'none';
+    }
+
+    apear(){
+        this.element.style.display = 'block'
+    }
+}
 /****** TESTS *****************************/
-var game = new Game();
-game.numberOfPiles = 5;
+let game = new Game();
+game.numberOfPiles = 3;
 game.createBoard();
