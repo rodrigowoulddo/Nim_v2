@@ -164,13 +164,16 @@ button.cancelButton{
     background-color: darkslategrey;
     padding: 10px;
     display: none; /* Hidden by default */
+    border-style: outset;
+    border-width: 4px;
 }
 
 .window-holder{
-    float: right;
     width: auto;
     height: auto;
-    position:relative;
+    position:absolute;
+    top: 200px;
+    left: 200px;
 }
 
 div.window#dialogConfig{

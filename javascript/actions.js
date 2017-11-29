@@ -1,6 +1,40 @@
 
 /****** CLASSES *****************************/
 
+const COMPLETE_REQUEST = 4;
+const STATUS_COMPLETE = 200;
+const HOST = "twserver.alunos.dcc.fc.up.pt";
+const PORT = "8008";
+class Server{
+
+    constructor(){
+    }
+
+    static executeRequest(httpMethod, service, data, executedFunction){
+        let xhr = new XMLHttpRequest();
+        xhr.open(httpMethod,"http://"+HOST+":"+PORT+"/"+service,true);
+        xhr.onreadystatechange = function() {
+            if(xhr.readyState === COMPLETE_REQUEST && xhr.status === STATUS_COMPLETE) {
+                let response = JSON.parse(xhr.responseText);
+                console.log(response);
+                executedFunction(response);
+            }
+        };
+        xhr.send(data);
+    }
+
+    static executeRequestNoFunc(httpMethod, service, data){
+        let xhr = new XMLHttpRequest();
+        xhr.open(httpMethod,"http://"+HOST+":"+PORT+"/"+service,true);
+        xhr.onreadystatechange = function() {
+            if(xhr.readyState === COMPLETE_REQUEST && xhr.status === STATUS_COMPLETE) {
+                let response = JSON.parse(xhr.responseText);
+                console.log(response);
+            }
+        };
+        xhr.send(data);
+    }
+}
 
 class Messeger{
     constructor(){
@@ -22,6 +56,7 @@ class Game{
 
     constructor(){
         const self = this;
+        this.id = "";
         this.numberOfPiles = 0;
         this.dificulty = 0;
         this.Player1Counter = 0;
@@ -131,22 +166,42 @@ class Playable {
 }
 
 class Window{
-    constructor(type){
 
-        switch(type){
-            case 'login':
-                this.element = document.getElementById("dialogLogin");
-                break;
-            case 'rules':
-                this.element = document.getElementById("dialogRules");
-                break;
-            case 'ranking':
-                this.element = document.getElementById("dialogRanking");
-                break;
-            case 'config':
-                this.element = document.getElementById("dialogConfig");
-                break;
+    constructor(type){
+        const self = this;
+        this.element = document.getElementById('dialog'+type);
+        this.btnClose = document.getElementById('btnClose'+type);
+        this.btnOpen = document.getElementById('btn'+type);
+
+        this.btnClose.onclick = function () {
+            self.disapear();
+        };
+
+        this.btnOpen.onclick = function () {
+            self.show();
+        };
+
+
+        /*Ranking*/
+        if(type === "Ranking"){
+            this.tableRanking = document.getElementById("tableRanking");
+            Window.updateRaanking();
         }
+
+        /*Login*/
+        if(type === "Login") {
+            this.btnDoLogin = document.getElementById("btnDoLogin");
+            this.txtNick = document.getElementById("txtNick");
+            this.txtPass = document.getElementById("txtPass");
+
+            this.btnDoLogin.onclick = function () {
+                self.login();
+            };
+        }
+
+        /*Config*/
+
+        /*Rules*/
     }
 
     show(){
@@ -154,11 +209,20 @@ class Window{
         this.apear();
     }
 
-    static closeAllWindows(){
-        new Window('login').disapear();
-        new Window('rules').disapear();
-        new Window('ranking').disapear();
-        new Window('config').disapear();
+    static closeAllWindows() {
+
+        try {
+            loginWindow.disapear();
+        }catch(err){}
+        try {
+            rulesWindow.disapear();
+        }catch(err){}
+        try {
+            rankingWindow.disapear();
+        }catch(err){}
+        try {
+            configWindow.disapear();
+        }catch(err){}
     }
 
     disapear(){
@@ -168,8 +232,84 @@ class Window{
     apear(){
         this.element.style.display = 'block'
     }
+
+    login(){
+
+        let join = new Join();
+        join.group = 99;
+        join.nick = this.txtNick.value;
+        join.pass = this.txtPass.value;
+        join.size = game.numberOfPiles;
+
+        Server.executeRequest("POST","join", JSON.stringify(join), Window.setGameId)
+    }
+
+    static setGameId(gameIdJSON){
+        game.id = gameIdJSON.game;
+    }
+
+    static updateRaanking(){
+        Window.clearTableRankingRows();
+
+        let ranking = new Ranking;
+        ranking.size = 3;
+
+        Server.executeRequest("POST","ranking",JSON.stringify(ranking), Window.fillRanking)
+    }
+
+    static fillRanking(rankingJSON){
+        let rankingList = rankingJSON.ranking;
+
+        for(let i = 0; i < rankingList.length; i=i+1){
+            if(i < 10){
+                let nick = rankingList[i].nick;
+                let victories = rankingList[i].victories;
+                let games = rankingList[i].games;
+
+                Window.insertRowOnRanking(i+1,nick,victories,games);
+            }
+        }
+    }
+
+    static insertRowOnRanking(index,nick, victories, games){
+        let row = tableRanking.insertRow(index);
+        row.className = 'normal-text';
+
+        let cellNick = row.insertCell(0);
+        let cellVictories = row.insertCell(1);
+        let cellGames = row.insertCell(2);
+        cellNick.innerHTML = nick;
+        cellVictories.innerHTML = victories;
+        cellGames.innerHTML = games;
+    }
+
+    static clearTableRankingRows(){
+        let rows = tableRanking.rows;
+        let i = rows.length;
+        while (--i) {
+            tableRanking.deleteRow(i);
+        }
+    }
 }
+
+class Ranking{
+
+}
+
+class Join{
+
+}
+
+
+
+/****** CLASSES *****************************/
+
+
 /****** TESTS *****************************/
 let game = new Game();
 game.numberOfPiles = 3;
 game.createBoard();
+let rankingWindow = new Window("Ranking");
+let loginWindow = new Window("Login");
+let rulesWindow = new Window("Rules");
+let configWindow = new Window("Config");
