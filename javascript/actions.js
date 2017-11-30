@@ -10,7 +10,7 @@ class Server{
     constructor(){
     }
 
-    static executeRequest(httpMethod, service, data, executedFunction){
+    static executeRequest(httpMethod, service, data, executedFunction, executedFunctionError, executedListener){
         let xhr = new XMLHttpRequest();
         xhr.open(httpMethod,"http://"+HOST+":"+PORT+"/"+service,true);
         xhr.onreadystatechange = function() {
@@ -18,8 +18,15 @@ class Server{
                 let response = JSON.parse(xhr.responseText);
                 console.log(response);
                 executedFunction(response);
+            }else{
+                if(xhr.status !== STATUS_COMPLETE)
+                    executedFunctionError(xhr.responseText);
+
+                if(xhr.responseText !== null && executedListener !== null)
+                    executedListener(Util.getLastLine(xhr.responseText));
             }
         };
+
         xhr.send(data);
     }
 
@@ -49,6 +56,12 @@ class Messeger{
     showRedMessege(messege){
         this.element.style.backgroundColor = "red";
         this.element.innerHTML = messege;
+    }
+
+    clearMessege(){
+        this.element.innerHTML = "";
+        this.element.style.display = "none";
+
     }
 }
 
@@ -100,6 +113,54 @@ class Game{
             this.element.appendChild(pile.element); /*appends the HTML pile to the board*/
         }
     }
+
+    waitForStart(){
+        Server.executeRequest("GET", "update?nick="+game.user.nick+"&"+"game="+this.id, null, this.startGame, this.showStartError, this.updateGame);
+    }
+
+    startGame(responseJSON){
+
+    }
+
+    showStartError(msg){
+
+    }
+
+    updateGame(responseJSON){
+
+        console.log(responseJSON);
+        let state = JSON.parse(responseJSON.substring(5));
+        console.log(state.turn+"'s turn - "+"Board is now: "+state.rack);
+
+    }
+
+    updateBoard(rack){
+        console.log("new board is now: rack");
+    }
+
+    win(nick){
+        console.log("winner is "+nick);
+    }
+
+    cancelWait(responseJSON){
+        let leave = new Leave();
+        leave.nick = user.nick;
+        leave.pass = user.pass;
+        leave.game = game.id;
+
+        Server.executeRequest("POST", "leave", JSON.stringify(leave), this.cancelWait, Game.showCancelError, null);
+
+        /*habilitar / desabilitar botoes*/
+    }
+
+    static showCancelError(msg){
+        game.messeger.showRedMessege("Cancel error - "+msg);
+    }
+
+    leave(){
+
+    }
+
 }
 
 class Pile{
@@ -236,16 +297,31 @@ class Window{
     login(){
 
         let join = new Join();
-        join.group = 99;
+        join.group = 1983;
         join.nick = this.txtNick.value;
         join.pass = this.txtPass.value;
         join.size = game.numberOfPiles;
 
-        Server.executeRequest("POST","join", JSON.stringify(join), Window.setGameId)
+        game.user = new User(join.nick, join.pass);
+
+        Server.executeRequest("POST","join", JSON.stringify(join), Window.makeLogin, Window.showLoginError, null);
     }
 
-    static setGameId(gameIdJSON){
+    static makeLogin(gameIdJSON){
+        game.messeger.clearMessege();
         game.id = gameIdJSON.game;
+
+        /*block login button*/
+        loginWindow.btnOpen.disabled = true;
+
+        /*unblock start and reset*/
+        btnStart.disabled = false;
+        btnLeave.disabled = false;
+
+    }
+
+    static showLoginError(msg){
+        game.messeger.showRedMessege("Login Failed - "+msg);
     }
 
     static updateRaanking(){
@@ -254,10 +330,11 @@ class Window{
         let ranking = new Ranking;
         ranking.size = 3;
 
-        Server.executeRequest("POST","ranking",JSON.stringify(ranking), Window.fillRanking)
+        Server.executeRequest("POST","ranking",JSON.stringify(ranking), Window.fillRanking, Window.showRankingError, null);
     }
 
     static fillRanking(rankingJSON){
+        game.messeger.clearMessege();
         let rankingList = rankingJSON.ranking;
 
         for(let i = 0; i < rankingList.length; i=i+1){
@@ -269,6 +346,10 @@ class Window{
                 Window.insertRowOnRanking(i+1,nick,victories,games);
             }
         }
+    }
+
+    static showRankingError(msg){
+        game.messeger.showRedMessege("Ranking load Failed - "+msg);
     }
 
     static insertRowOnRanking(index,nick, victories, games){
@@ -300,12 +381,34 @@ class Join{
 
 }
 
+class Leave{
+
+}
+
+class User{
+    constructor(nick,pass){
+        this.nick = nick;
+        this.pass = pass;
+    }
+}
 
 
-/****** CLASSES *****************************/
+
+/****** UTIL *****************************/
+class Util{
+    static getLastLine(text){
+        try{
+            if(text.lastIndexOf("\n")>0) {
+                return text.substring(0, text.lastIndexOf("\n"));
+            } else {
+                return text;
+            }
+        }catch(err){return text}
+    }
+}
 
 
-/****** TESTS *****************************/
+/****** GLOBAL *****************************/
 let game = new Game();
 game.numberOfPiles = 3;
 game.createBoard();
@@ -313,3 +416,17 @@ let rankingWindow = new Window("Ranking");
 let loginWindow = new Window("Login");
 let rulesWindow = new Window("Rules");
 let configWindow = new Window("Config");
+
+let btnStart = document.getElementById('btnStart');
+let btnLeave = document.getElementById('btnLeave');
+btnStart.disabled = true;
+btnLeave.disabled = true;
+
+btnStart.onclick = function () {
+    game.waitForStart();
+};
+
+btnLeave.onclick = function () {
+    game.leave();
+};
+
