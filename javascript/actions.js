@@ -22,7 +22,7 @@ class Server{
                 if(xhr.status !== STATUS_COMPLETE)
                     executedFunctionError(xhr.responseText);
 
-                if(xhr.responseText !== null && executedListener !== null)
+                if(xhr.responseText !== null && xhr.responseText!== "" && xhr.responseText !== "{}" && executedListener !== null)
                     executedListener(Util.getLastLine(xhr.responseText));
             }
         };
@@ -128,8 +128,8 @@ class Game{
 
     updateGame(responseJSON){
 
-        console.log(responseJSON);
-        let state = JSON.parse(responseJSON.substring(5));
+        console.log(Util.getLastLine(responseJSON).substring(5));
+        let state = JSON.parse(Util.getLastLine(responseJSON).substring(5));
         console.log(state.turn+"'s turn - "+"Board is now: "+state.rack);
 
     }
