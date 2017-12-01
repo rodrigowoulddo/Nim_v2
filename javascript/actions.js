@@ -14,31 +14,20 @@ class Server{
         let xhr = new XMLHttpRequest();
         xhr.open(httpMethod,"http://"+HOST+":"+PORT+"/"+service,true);
         xhr.onreadystatechange = function() {
-            if(xhr.readyState === COMPLETE_REQUEST && xhr.status === STATUS_COMPLETE) {
+            if(xhr.readyState === COMPLETE_REQUEST && xhr.status === STATUS_COMPLETE && executedFunction !== null) {
                 let response = JSON.parse(xhr.responseText);
                 console.log(response);
                 executedFunction(response);
             }else{
-                if(xhr.status !== STATUS_COMPLETE)
+                if(xhr.status !== STATUS_COMPLETE && executedFunctionError !== null )
                     executedFunctionError(xhr.responseText);
 
                 if(xhr.responseText !== null && xhr.responseText!== "" && xhr.responseText !== "{}" && executedListener !== null)
                     executedListener(Util.getLastLine(xhr.responseText));
             }
         };
+        console.log(xhr);
 
-        xhr.send(data);
-    }
-
-    static executeRequestNoFunc(httpMethod, service, data){
-        let xhr = new XMLHttpRequest();
-        xhr.open(httpMethod,"http://"+HOST+":"+PORT+"/"+service,true);
-        xhr.onreadystatechange = function() {
-            if(xhr.readyState === COMPLETE_REQUEST && xhr.status === STATUS_COMPLETE) {
-                let response = JSON.parse(xhr.responseText);
-                console.log(response);
-            }
-        };
         xhr.send(data);
     }
 }
@@ -49,11 +38,13 @@ class Messeger{
     }
 
     showGreenMessege(messege){
+        this.element.style.display = "block";
         this.element.style.backgroundColor = "green";
         this.element.innerHTML = messege;
     }
 
     showRedMessege(messege){
+        this.element.style.display = "block";
         this.element.style.backgroundColor = "red";
         this.element.innerHTML = messege;
     }
@@ -77,6 +68,7 @@ class Game{
         this.firstPlayer = 1;
         this.piles = [];
         this.messeger = new Messeger();
+        this.user = null;
 
         this.element = document.getElementById('board');
     }
@@ -97,6 +89,14 @@ class Game{
         }
     }
 
+    resetBoard(){
+
+        for(let i = 0; i < this.piles.length; i++){
+            this.piles[i].reset();
+        }
+        this.blockBoard();
+    }
+
     createBoard(){
         for(let i = 0; i < this.numberOfPiles; i++){
 
@@ -112,34 +112,92 @@ class Game{
             this.piles.push(pile);
             this.element.appendChild(pile.element); /*appends the HTML pile to the board*/
         }
+
+        this.blockBoard();
     }
 
     waitForStart(){
-        Server.executeRequest("GET", "update?nick="+game.user.nick+"&"+"game="+this.id, null, this.startGame, this.showStartError, this.updateGame);
+        Server.executeRequest("GET", "update?nick="+game.user.nick+"&"+"game="+this.id, null, this.startGame, this.showStartError, Game.updateGame);
+
+        btnStart.disabled = true;
+        btnLeave.disabled = false;
+        this.messeger.showRedMessege("Waiting for the other player...");
     }
 
     startGame(responseJSON){
-
+        btnStart.disabled = true;
+        btnLeave.disabled = false;
     }
 
     showStartError(msg){
-
+        btnStart.disabled = true;
+        btnLeave.disabled = true;
     }
 
-    updateGame(responseJSON){
-
-        console.log(Util.getLastLine(responseJSON).substring(5));
-        let state = JSON.parse(Util.getLastLine(responseJSON).substring(5));
-        console.log(state.turn+"'s turn - "+"Board is now: "+state.rack);
-
+    blockBoard(){
+        for(let i = 0; i < this.piles.length; i++){
+            this.piles[i].block();
+        }
     }
 
-    updateBoard(rack){
-        console.log("new board is now: rack");
+    unblockBoard(){
+        for(let i = 0; i < this.piles.length; i++){
+            this.piles[i].unblock();
+        }
     }
 
-    win(nick){
+    static updateGame(responseJSON){
+
+        let updateMessege = Util.getLastLine(responseJSON).substring(5);
+
+        if(Util.getAtributes(updateMessege).includes('turn')){
+
+            let state = JSON.parse(updateMessege);
+            console.log(state.turn+"'s turn - "+"Board is now: "+state.rack);
+
+            if(state.turn === game.user.nick){
+                game.messeger.showGreenMessege("Your turn!");
+                game.unblockBoard();
+            }
+            else{
+                game.messeger.showRedMessege(state.turn+"'s turn! Wait...");
+                game.blockBoard();
+            }
+
+            game.updatePiles(state.rack);
+        }
+
+        if(Util.getAtributes(updateMessege).includes('winner')) {
+            let state = JSON.parse(updateMessege);
+            let winner = state.winner;
+            game.blockBoard();
+            // game.updatePiles(state.rack);
+            Game.win(winner);
+        }
+    }
+
+    updatePiles(rack){
+        console.log("new board is now: "+rack);
+        for(let i = 0; i < rack.length; i++){
+            this.piles[i].setNumberOfPlayables(rack[i]);
+        }
+    }
+
+    static win(nick){
         console.log("winner is "+nick);
+
+        if(game.user.nick === nick)
+            game.messeger.showGreenMessege("You won the game!!");
+        else{
+            if(nick !== null)
+                game.messeger.showRedMessege(nick+" won the game!!");
+            else
+                game.messeger.showRedMessege("Nobody won the game!!");
+
+        }
+
+
+        game.resetViews();
     }
 
     cancelWait(responseJSON){
@@ -158,6 +216,48 @@ class Game{
     }
 
     leave(){
+
+        /*{"nick": "zp", "pass": "evite", "game": "fa93b4..." }*/
+        let leave = new Leave();
+        leave.nick = game.user.nick;
+        leave.pass = game.user.pass;
+        leave.game = game.id;
+
+        Server.executeRequest("POST", "leave", JSON.stringify(leave), this.leaveSucess, this.leaveError, null);
+    }
+
+    leaveSucess(responseJSON){
+        game.resetViews();
+    }
+
+    leaveError(responseJSON){
+
+    }
+
+
+    static play(pile, remainPlayables){
+
+        /*{"nick": "zp", "pass": "evite", "game": "2fd9d...", "stack": 3, "pieces": 1 }*/
+
+        let notification = new Notification();
+
+        notification.game = game.id;
+        notification.nick = game.user.nick;
+        notification.pass = game.user.pass;
+        notification.stack = pile;
+        notification.pieces = remainPlayables;
+
+        Server.executeRequest('POST','notify',JSON.stringify(notification),null,null,null);
+
+    }
+
+    resetViews(){
+
+        Window.closeAllWindows();
+        btnLogin.disabled = false;
+        btnStart.disabled = true;
+        btnLeave.disabled = true;
+        this.resetBoard();
 
     }
 
@@ -179,6 +279,33 @@ class Pile{
                 return false;
 
         return true;
+    }
+
+    setNumberOfPlayables(numberOfPlayables){
+        let j = 8;
+        for(let i = 0; i < this.playables.length; i++){
+            if(j > numberOfPlayables)
+                this.playables[i].removePlayable();
+            j--
+        }
+    }
+
+    block(){
+        for(let i = 0; i < this.playables.length; i++){
+            this.playables[i].makeUnclicable();
+        }
+    }
+
+    unblock(){
+        for(let i = 0; i < this.playables.length; i++){
+            this.playables[i].makeClicable();
+        }
+    }
+
+    reset() {
+        for (let i = 0; i < this.playables.length; i++) {
+            this.playables[i].addPlayable();
+        }
     }
 }
 
@@ -207,6 +334,28 @@ class Playable {
         this.element.style.margin = "4px"; /*so the border doesnt make diference*/
     }
 
+    addPlayable(){
+        this.state = true;
+        this.unBlockElement();
+    }
+
+    unBlockElement(){
+        this.element.style.background = "darkslategrey";
+        this.element.style.pointerEvents = "auto";
+        this.element.style.border = "outset";
+        this.element.style.margin = "0px"; /*so the border doesnt make diference*/
+    }
+
+    makeUnclicable(){
+        if(this.state === true)
+            this.element.style.pointerEvents = "none";
+    }
+
+    makeClicable(){
+        if(this.state === true)
+            this.element.style.pointerEvents = "auto";
+    }
+
     romoveAllAbove(){
         let playableBrothers = this.pileFather.playables;
 
@@ -219,10 +368,18 @@ class Playable {
         }
     }
     playableClick(){
-        this.removePlayable();
-        this.romoveAllAbove();
+        // this.removePlayable();
+        // this.romoveAllAbove();
         // game.checkForWinner();
-        this.pileFather.gameFather.checkForWinner();
+        // this.pileFather.gameFather.checkForWinner();
+
+        let playableId = this.element.id;
+        let playablereference = playableId.substring(9);
+
+        let pile = playablereference[0];
+        let playable = playablereference[2];
+
+        Game.play(pile,(7-playable));
     }
 }
 
@@ -316,7 +473,10 @@ class Window{
 
         /*unblock start and reset*/
         btnStart.disabled = false;
-        btnLeave.disabled = false;
+        btnLeave.disabled = true;
+
+        /*closes the login window*/
+        Window.closeAllWindows();
 
     }
 
@@ -391,19 +551,39 @@ class User{
         this.pass = pass;
     }
 }
+class Notification{
+
+}
 
 
 
 /****** UTIL *****************************/
 class Util{
     static getLastLine(text){
-        try{
             if(text.lastIndexOf("\n")>0) {
-                return text.substring(0, text.lastIndexOf("\n"));
-            } else {
+                let lines = text.split("\n");
+
+                lines = lines.filter(function(a){return a !== ""});
+
+                /*debug*/
+                console.log(lines);
+
+                return lines[lines.length - 1];
+            }else{
                 return text;
             }
-        }catch(err){return text}
+    }
+
+
+
+    static getAtributes(json){
+
+        let obj = JSON.parse(json);
+        let keys = [];
+        for(let key in obj){
+                keys.push(key);
+            }
+        return keys;
     }
 }
 
