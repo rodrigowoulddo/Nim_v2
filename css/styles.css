@@ -151,6 +151,10 @@ button.loginButton{
     float: right;
 }
 
+button.registerButton{
+    float: left;
+}
+
 button.cancelButton{
     float: left;
 }

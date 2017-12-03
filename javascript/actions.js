@@ -73,6 +73,13 @@ class Game{
         this.element = document.getElementById('board');
     }
 
+    deleteBoard(){
+        while (this.element.hasChildNodes()) {
+            this.element.removeChild(this.element.lastChild);
+        }
+        this.piles=[];
+    }
+
     gameOver(){
         for(let i = 0; i < this.piles.length; i++)
             if(!this.piles[i].emptyPile())
@@ -98,6 +105,7 @@ class Game{
     }
 
     createBoard(){
+        this.deleteBoard();
         for(let i = 0; i < this.numberOfPiles; i++){
 
             /*create pile dinamicaly and inserts on board*/
@@ -117,21 +125,25 @@ class Game{
     }
 
     waitForStart(){
-        Server.executeRequest("GET", "update?nick="+game.user.nick+"&"+"game="+this.id, null, this.startGame, this.showStartError, Game.updateGame);
+        Server.executeRequest("GET", "update?nick="+game.user.nick+"&"+"game="+this.id, null, Game.startGame, Game.showStartError, Game.updateGame);
 
         btnStart.disabled = true;
         btnLeave.disabled = false;
         this.messeger.showRedMessege("Waiting for the other player...");
     }
 
-    startGame(responseJSON){
+    static startGame(responseJSON){
         btnStart.disabled = true;
         btnLeave.disabled = false;
     }
 
-    showStartError(msg){
+    static showStartError(messegeJSON){
         btnStart.disabled = true;
         btnLeave.disabled = true;
+
+        game.messeger.showRedMessege("Start error - "+JSON.parse(messegeJSON).error);
+
+        btnLogin.disabled = false;
     }
 
     blockBoard(){
@@ -215,7 +227,7 @@ class Game{
         game.messeger.showRedMessege("Cancel error - "+msg);
     }
 
-    leave(){
+    static leave(){
 
         /*{"nick": "zp", "pass": "evite", "game": "fa93b4..." }*/
         let leave = new Leave();
@@ -223,15 +235,15 @@ class Game{
         leave.pass = game.user.pass;
         leave.game = game.id;
 
-        Server.executeRequest("POST", "leave", JSON.stringify(leave), this.leaveSucess, this.leaveError, null);
+        Server.executeRequest("POST", "leave", JSON.stringify(leave), Game.leaveSucess, Game.leaveError, null);
     }
 
-    leaveSucess(responseJSON){
+    static leaveSucess(responseJSON){
         game.resetViews();
     }
 
-    leaveError(responseJSON){
-
+    static leaveError(messegeJSON){
+        game.messeger.showRedMessege("Leave error"+JSON.parse(messegeJSON).error)
     }
 
 
@@ -254,11 +266,17 @@ class Game{
     resetViews(){
 
         Window.closeAllWindows();
-        btnLogin.disabled = false;
+        loginWindow.btnOpen.disabled = false;
+        configWindow.btnOpen.disabled = false;
         btnStart.disabled = true;
         btnLeave.disabled = true;
         this.resetBoard();
 
+    }
+
+    changeNumberOfPiles(nPiles){
+        this.numberOfPiles = nPiles;
+        this.createBoard();
     }
 
 }
@@ -409,11 +427,16 @@ class Window{
         /*Login*/
         if(type === "Login") {
             this.btnDoLogin = document.getElementById("btnDoLogin");
+            this.btnRegister = document.getElementById("btnRegister");
             this.txtNick = document.getElementById("txtNick");
             this.txtPass = document.getElementById("txtPass");
 
             this.btnDoLogin.onclick = function () {
                 self.login();
+            };
+
+            this.btnRegister.onclick = function () {
+                self.register();
             };
         }
 
@@ -464,12 +487,32 @@ class Window{
         Server.executeRequest("POST","join", JSON.stringify(join), Window.makeLogin, Window.showLoginError, null);
     }
 
+    register(){
+
+        let nick = this.txtNick.value;
+        let pass = this.txtPass.value;
+        let user = new User(nick,pass);
+
+        Server.executeRequest("POST","register", JSON.stringify(user), Window.makeRegister, Window.showRegisterError, null);
+
+    }
+
+    static makeRegister(responseJSON){
+        game.messeger.showGreenMessege('Register sucefull!');
+    }
+
+    static showRegisterError(messegeJSON){
+        game.messeger.showRedMessege("Register error - "+JSON.parse(messegeJSON).error);
+    }
+
+
     static makeLogin(gameIdJSON){
         game.messeger.clearMessege();
         game.id = gameIdJSON.game;
 
-        /*block login button*/
+        /*block login and config opening*/
         loginWindow.btnOpen.disabled = true;
+        configWindow.btnOpen.disabled = true;
 
         /*unblock start and reset*/
         btnStart.disabled = false;
@@ -480,15 +523,15 @@ class Window{
 
     }
 
-    static showLoginError(msg){
-        game.messeger.showRedMessege("Login Failed - "+msg);
+    static showLoginError(messegeJSON){
+        game.messeger.showRedMessege("Login Failed - "+JSON.parse(messegeJSON).error);
     }
 
     static updateRaanking(){
         Window.clearTableRankingRows();
 
         let ranking = new Ranking;
-        ranking.size = 3;
+        ranking.size = game.numberOfPiles;
 
         Server.executeRequest("POST","ranking",JSON.stringify(ranking), Window.fillRanking, Window.showRankingError, null);
     }
@@ -508,8 +551,8 @@ class Window{
         }
     }
 
-    static showRankingError(msg){
-        game.messeger.showRedMessege("Ranking load Failed - "+msg);
+    static showRankingError(messegeJSON){
+        game.messeger.showRedMessege("Ranking load Failed - "+JSON.parse(messegeJSON).error);
     }
 
     static insertRowOnRanking(index,nick, victories, games){
@@ -551,6 +594,7 @@ class User{
         this.pass = pass;
     }
 }
+
 class Notification{
 
 }
@@ -607,6 +651,16 @@ btnStart.onclick = function () {
 };
 
 btnLeave.onclick = function () {
-    game.leave();
+    Game.leave();
 };
 
+let radio3piles = document.getElementById('radio3piles');
+let radio5piles = document.getElementById('radio5piles');
+
+radio3piles.onclick = function () {
+    game.changeNumberOfPiles(3);
+};
+
+radio5piles.onclick = function () {
+    game.changeNumberOfPiles(5);
+};
