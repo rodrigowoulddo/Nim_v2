@@ -111,7 +111,7 @@ class Game{
             /*create pile dinamicaly and inserts on board*/
             const pile = new Pile('pile'+i, this);
 
-            for(let i2 = 0; i2 < 8; i2++){  /*each pile has 8 slots for playables*/
+            for(let i2 = 0; i2 < 5; i2++){  /*each pile has 8 slots for playables*/
                 const playable = new Playable('playablei'+i+'_'+i2, pile);
                 pile.playables.push(playable);
                 pile.element.appendChild(playable.element); /*appends the HTML playable to the pile*/
@@ -300,7 +300,7 @@ class Pile{
     }
 
     setNumberOfPlayables(numberOfPlayables){
-        let j = 8;
+        let j = 5;
         for(let i = 0; i < this.playables.length; i++){
             if(j > numberOfPlayables)
                 this.playables[i].removePlayable();
@@ -397,7 +397,7 @@ class Playable {
         let pile = playablereference[0];
         let playable = playablereference[2];
 
-        Game.play(pile,(7-playable));
+        Game.play(pile,(4-playable));
     }
 }
 

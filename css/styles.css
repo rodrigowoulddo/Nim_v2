@@ -10,6 +10,10 @@ body {
     margin: 40px;
 }
 
+td{
+    padding:0 15px 0 15px;
+}
+
 .container{
     margin: 0 auto;
     background:darkslategrey ;
@@ -34,7 +38,7 @@ body {
 .pile {
 
     width: 45px;
-    height: 408px;
+    height: 258px;
     border-style: outset;
     border-width: 2px;
     padding: 10px;
@@ -61,7 +65,7 @@ body {
 }
 
 .board{
-    height: 450px;
+    height: 430px;
     width: max-content;
     margin:  0 auto;
 }
